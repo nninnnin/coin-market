@@ -106,7 +106,7 @@ response
 
 ## models
 
-다음의 모델들이 구현되어 있어야 한다.  
+다음의 모델들이 구현되어 있어야 한다.
 
 users, keys, coins, assets
 

@@ -1,7 +1,8 @@
 const express = require('express');
-const router = express.Router();
-
+const { body, validationResult } = require('express-validator');
 const controller = require('./controller');
+
+const router = express.Router();
 
 router.get('/', controller.index);
 
@@ -9,7 +10,23 @@ router.get('/', controller.index);
 router.post('/login', controller.login);
 
 // 회원가입
-router.post('/register', controller.register);
+router.post(
+  '/register',
+  [
+    body('name').isString().isLength({ min: 4, max: 12 }),
+    body('email').isString().isEmail(),
+    body('password').isLength({ min: 8, max: 16 }),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    controller.register(req, res);
+  }
+);
 
 // API 요청하여 코인 가져오기 (fetch / axios)
 // router.get('/coins', controller.coins);
@@ -22,5 +39,3 @@ router.post('/coins/:coin_name/buy', controller.buyCoin);
 // router.get('/assets', controller.assets);
 
 module.exports = router;
-
-// nninnnin7

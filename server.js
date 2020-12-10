@@ -1,6 +1,24 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const app = express();
 const port = 8000;
+
+const jsonParser = bodyParser.json();
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+app.use(jsonParser);
+app.use(urlencodedParser);
+
+mongoose.connect(
+  'mongodb+srv://walter:Ipauj3sJ5Hz2msUN@cluster0.bwwol.mongodb.net/test',
+  {
+    useNewUrlParser: true
+  },
+  () => {
+    console.log('몽고디비 연결 성공!');
+  }
+);
 
 const router = require('./routes.js');
 

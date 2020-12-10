@@ -6,7 +6,11 @@ const userSchema = new Schema({
   name: String,
   email: String,
   password: String,
-  money: Number,
+  asset: {
+    type: Schema.Types.ObjectId,
+    ref: 'Asset'
+  },
+  key: String
 });
 
 module.exports = mongoose.model('User', userSchema);

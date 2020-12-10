@@ -1,25 +1,58 @@
 const axios = require("axios");
+const jwt = require('jsonwebtoken');
 const User = require('./models/User');
+const Asset = require('./models/Asset');
+const { encryptPassword } = require("./utils");
 
 const controller = {
-  index: (req, res) => {
+  index: async (req, res) => {
     res.send('Hello world');
   },
-  register: (req, res) => {
-    // logic
-    // 유저의 asset에 1만달러를 추가한다
+  register: async (req, res) => {
+    const { name, email, password } = req.body;
 
-    const { id, email, password } = req.body;
+    if (await User.find({ name })) {
+      return res.json('User already exists');
+    }
 
-    User.create({
-      name: id,
-      email: email,
-      password: password,
-      money: 10000
+    const asset = await Asset.create({
+      usd: 10000
     });
+
+    await User.create({
+      name: name,
+      email: email,
+      password: encryptPassword(password),
+      asset: asset,
+    });
+
+    res.sendStatus(200);
   },
-  login: () => {
-    //
+  login: async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.json({ err: '유저가 존재하지 않습니다' });
+    }
+
+    if (user.password === encryptPassword(password)) {
+      // 로그인 성공
+
+      // 토큰 발행
+      const token = jwt.sign({
+        exp: Math.floor(Date.now() / 1000) + (60 * 5), // 5분
+        data: { publicKey: 'publicKey' },
+      }, 'secretKey');
+
+      console.log(token);
+
+    }
+
+    // 로그인 시 publicKey, secretKey를 만들고
+    // DB에 저장,
+    // 클라이언트에게도 전달
   },
   buyCoin: async (req, res) => {
     // 1. 코인 가격을 coingecko API에서 가져온다
