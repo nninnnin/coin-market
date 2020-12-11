@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const controller = require('./controller');
+const { authentication } = require('./auth');
 
 const router = express.Router();
 
@@ -28,14 +29,27 @@ router.post(
   }
 );
 
-// API 요청하여 코인 가져오기 (fetch / axios)
-// router.get('/coins', controller.coins);
-// router.get('/coins/:coin_name', controller.coinPrice);
+router.get('/coins', controller.coins);
 
-router.post('/coins/:coin_name/buy', controller.buyCoin);
-// router.post('/coins/:coin_name/sell', controller.sellCoin);
+router.get('/coins/:coin_name', controller.coinPrice);
+
+router.post(
+  '/coins/:coin_name/buy',
+  authentication,
+  controller.buyCoin
+);
+
+router.post(
+  '/coins/:coin_name/sell',
+  authentication,
+  controller.sellCoin
+);
 
 // 나의 자산 조회
-// router.get('/assets', controller.assets);
+router.get(
+  '/assets',
+  authentication,
+  controller.assets
+);
 
 module.exports = router;
